@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffe9ec" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="description" content="Một chiếc thư nhỏ xinh dành riêng cho người thương 💗" />
+  <title>Một lá thư bé xíu gửi đến em 💌</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --berry: #e96d96;
+      --berry-dark: #c84d7a;
+      --ink: #75445b;
+      --muted: #9e7185;
+      --white: #fff8fa;
+      --rose-100: #fff3f7;
+      --shadow: 0 18px 55px rgba(179, 86, 122, .19), 0 4px 15px rgba(191, 118, 146, .09);
+      --panel-top: 14.5svh;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { min-height: 100%; overflow: hidden; }
+    body {
+      margin: 0;
+      width: 100%; min-height: 100vh; min-height: 100svh;
+      overflow: hidden;
+      background-color: #fbe8e8;
+      background-image: url("chiikawa.webp");
+      background-size: auto 100%;
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      font-family: 'Mali', 'Comic Sans MS', cursive;
+      color: var(--ink);
+      -webkit-tap-highlight-color: transparent;
+      isolation: isolate;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(to bottom, rgba(255, 247, 250, .18), rgba(255, 248, 250, .04) 45%, transparent 60%);
+    }
+    button { font: inherit; touch-action: manipulation; }
+    button:focus-visible { outline: 3px solid #db668e; outline-offset: 5px; }
+    [hidden] { display: none !important; }
+
+    /* Cute B ambience: full-screen hearts + sparkles + soft bokeh.
+       All visuals stay below the interactive scenes. */
+    #sky { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+    .particle {
+      position: absolute; top: -10svh; left: var(--x);
+      line-height: 1; opacity: 0;
+      animation: gentle-fall var(--duration) linear var(--delay) infinite;
+      will-change: transform, opacity;
+    }
+    .particle-inner {
+      display: inline-block; font-size: var(--size); color: var(--color);
+      filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 7px var(--glow));
+      animation: candy-twinkle var(--twinkle) ease-in-out var(--twinkle-delay) infinite alternate;
+      will-change: transform, opacity;
+    }
+    .particle.heart .particle-inner { text-shadow: 0 1px 2px #ba6c8c55; }
+    .particle.sparkle .particle-inner {
+      filter: drop-shadow(0 0 3px white) drop-shadow(0 0 9px var(--glow));
+    }
+    .particle.falling { top: var(--startY, -12svh); }
+    .particle.drift {
+      top: var(--y); opacity: var(--alpha);
+      animation: ambient-drift var(--duration) ease-in-out var(--delay) infinite alternate;
+    }
+    @keyframes ambient-drift {
+      0% { transform: translate3d(-10px, 8px, 0) scale(.92) rotate(-8deg); opacity: calc(var(--alpha) * .72); }
+      50% { transform: translate3d(14px, -10px, 0) scale(1.07) rotate(6deg); opacity: var(--alpha); }
+      100% { transform: translate3d(-8px, -22px, 0) scale(.96) rotate(-4deg); opacity: calc(var(--alpha) * .82); }
+    }
+    @keyframes gentle-fall {
+      0%   { transform: translate3d(0, -4svh, 0) rotate(-15deg); opacity: 0; }
+      10%  { opacity: var(--alpha); }
+      85%  { opacity: var(--alpha); }
+      100% { transform: translate3d(var(--sway), 118svh, 0) rotate(95deg); opacity: 0; }
+    }
+    @keyframes candy-twinkle {
+      0% { transform: scale(.82) rotate(-9deg); opacity: .70; }
+      100% { transform: scale(1.24) rotate(9deg); opacity: 1; }
+    }
+    .bokeh {
+      position: absolute; left: var(--x); top: var(--y);
+      width: var(--size); height: var(--size); border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fffdfd, var(--color) 43%, transparent 75%);
+      filter: blur(var(--blur)) drop-shadow(0 0 9px var(--color));
+      opacity: .42;
+      animation: bokeh-drift var(--duration) ease-in-out var(--delay) infinite alternate;
+      will-change: transform, opacity;
+    }
+    @keyframes bokeh-drift {
+      from { transform: translate3d(-9px, 7px, 0) scale(.85); opacity: .18; }
+      to { transform: translate3d(13px, -24px, 0) scale(1.17); opacity: .50; }
+    }
+    /* Mini heart burst when the envelope opens. */
+    #burstLayer { position: fixed; inset: 0; z-index: 9; overflow: hidden; pointer-events: none; }
+    .burst-heart {
+      position: absolute; left: var(--x); top: var(--y);
+      font-size: var(--size); line-height: 1; color: var(--color);
+      filter: drop-shadow(0 0 7px #fff) drop-shadow(0 0 7px #fa8bad);
+      transform: translate(-50%, -50%); opacity: 0;
+      animation: burst-fly 1.25s cubic-bezier(.16,.75,.25,1) forwards;
+    }
+    @keyframes burst-fly {
+      0%   { transform: translate(-50%, -50%) scale(.35) rotate(0deg); opacity: 0; }
+      18%  { opacity: 1; }
+      73%  { opacity: .95; }
+      100% { transform: translate(-50%, -50%) translate3d(var(--dx),var(--dy),0) scale(.70) rotate(var(--turn)); opacity: 0; }
+    }
+
+    .scene { position: fixed; z-index: 4; }
+    .eyebrow {
+      display: inline-block; font: 700 clamp(10px, 1.55svh, 13px)/1.4 'Comfortaa', sans-serif;
+      letter-spacing: .15em; text-transform: uppercase; color: var(--berry-dark);
+    }
+    .intro { inset: 0; z-index: 3; pointer-events: none; transition: opacity .45s ease, visibility .45s ease; }
+    .intro.is-gone { opacity: 0; visibility: hidden; }
+    .intro-title {
+      position: absolute; top: 7.8svh; left: 50%; width: min(91vw, 490px);
+      margin: 0; transform: translateX(-50%);
+      color: #b25a7b; text-align: center;
+      font-size: clamp(16px, 2.35svh, 23px); font-weight: 700;
+      text-shadow: 0 2px 12px rgba(255,255,255,.92);
+    }
+    .intro-title::after { content: ' ✧'; color: #e8a1b4; }
+    .envelope-spot {
+      position: absolute; top: 17svh; left: 50%; transform: translateX(-50%);
+      width: min(240px, 56vw); height: min(169px, 24svh);
+      pointer-events: auto;
+    }
+    .envelope-spot::before {
+      content: ''; position: absolute; inset: -28px -44px; z-index: -1;
+      border-radius: 50%; pointer-events: none;
+      background: radial-gradient(ellipse, #ffc5df80, #ffe3f055 47%, transparent 73%);
+      animation: envelope-aura 3.5s ease-in-out infinite;
+    }
+    @keyframes envelope-aura {
+      0%,100% { transform: scale(.92); opacity: .63; }
+      50% { transform: scale(1.08); opacity: .92; }
+    }
+    .envelope-button {
+      display: block; position: relative; width: 100%; height: 100%; padding: 0;
+      background: none; border: none; cursor: pointer;
+      animation: floaty 3s ease-in-out infinite;
+      filter: drop-shadow(0 15px 12px rgba(198, 106, 145, .25));
+    }
+    .envelope-button:hover { filter: drop-shadow(0 16px 18px rgba(198, 106, 145, .37)); }
+    .envelope-button.is-opening { animation: none; cursor: default; }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-11px) rotate(2deg); }
+    }
+    .envelope-art { position: relative; display: block; width: 100%; height: 100%; perspective: 900px; }
+    .env-back {
+      position: absolute; inset: 11% 0 4%; background: #f7a9c5;
+      border: 2px solid rgba(201, 92, 128, .3);
+      border-radius: 8px 8px 15px 15px;
+      box-shadow: inset 0 0 22px #fff6;
+    }
+    .env-paper {
+      position: absolute; z-index: 2; top: 16%; left: 8%; width: 84%; height: 68%;
+      border-radius: 8px; background: #fffaf9; box-shadow: 0 0 8px #c96b8d22;
+      border: 1px solid #f8d6e0;
+      display: grid; place-content: center; gap: 6px;
+      text-align: center; font: 700 13px 'Comfortaa', sans-serif; color: #d9779b;
+      transition: transform 1s cubic-bezier(.2,.7,.2,1);
+    }
+    .env-paper span { font-size: 29px; }
+    .env-front {
+      position: absolute; z-index: 3; inset: 11% 0 4%; border-radius: 0 0 14px 14px;
+      background: linear-gradient(135deg, #ffd3e1, #ffc0d5 42%, #f5a1c1);
+      clip-path: polygon(0 0, 50% 49%, 100% 0, 100% 100%, 0 100%);
+    }
+    .env-front::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(40deg, #fbb5ce 48%, transparent 49%), linear-gradient(320deg, #ffcade 48%, transparent 49%);
+      opacity: .75;
+    }
+    .env-flap {
+      position: absolute; z-index: 5; top: 11%; left: 0; width: 100%; height: 78%;
+      background: linear-gradient(180deg, #ffd8e5 0%, #f8afc9 98%);
+      clip-path: polygon(0 0, 100% 0, 50% 74%);
+      transform-origin: 50% 0%;
+      transition: transform .66s ease, z-index 0s .42s;
+      backface-visibility: visible;
+    }
+    .env-seal {
+      position: absolute; z-index: 6; left: 50%; top: 55%; transform: translate(-50%,-50%);
+      display: grid; place-items: center; width: 49px; height: 49px;
+      border-radius: 50%; border: 3px solid #fff5;
+      background: #fff0f5; box-shadow: 0 3px 11px #be6a8c55;
+      color: #ed6e9d; font: 700 31px/1 'Comfortaa', sans-serif;
+      transition: opacity .25s ease, transform .5s ease;
+      animation: seal-beat 1.9s ease-in-out infinite;
+    }
+    @keyframes seal-beat {
+      0%,100% { transform: translate(-50%,-50%) scale(1); box-shadow: 0 3px 11px #be6a8c55; }
+      50% { transform: translate(-50%,-50%) scale(1.1); box-shadow: 0 3px 19px #f979a5b3; }
+    }
+    .envelope-button.is-opening .env-seal { animation: none; }
+    .envelope-button.is-opening .env-flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope-button.is-opening .env-seal { opacity: 0; transform: translate(-50%,-95%) scale(.7); }
+    .envelope-button.is-opening .env-paper { transform: translateY(-65%); }
+    .tap-hint {
+      position: absolute; left: 50%; top: 40.8svh;
+      transform: translateX(-50%); width: min(90vw, 400px); margin: 0;
+      text-align: center; font-size: clamp(12px, 1.7svh, 15px);
+      color: #ae5d7b; text-shadow: 0 2px 10px #fff;
+      animation: little-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes little-pulse { 0%,100% { opacity: .72; } 50% { opacity: 1; } }
+
+    /* Upper-half glass cards keep the supplied Chiikawa illustration visible. */
+    .glass {
+      position: fixed; top: var(--panel-top); left: 50%; z-index: 6;
+      border: 1.5px solid transparent;
+      border-radius: 25px;
+      background:
+        linear-gradient(145deg, rgba(255,249,251,.93), rgba(255,239,245,.86)) padding-box,
+        linear-gradient(110deg, #ffffff, #f7accb, #ffeab7, #ffffff, #f5acd9, #ffffff) border-box;
+      background-size: 100% 100%, 250% 250%;
+      animation: sugar-shimmer 9s ease-in-out infinite alternate;
+      box-shadow: var(--shadow); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      opacity: 0; visibility: hidden;
+      transform: translate3d(-50%,75px,0) scale(.86);
+      transition: opacity .55s ease, transform .65s cubic-bezier(.18,.82,.22,1), visibility .55s;
+      pointer-events: none;
+    }
+    @keyframes sugar-shimmer {
+      from { background-position: 0 0, 0% 50%; }
+      to { background-position: 0 0, 100% 50%; }
+    }
+    .glass::before {
+      content: '✦'; position: absolute; right: 11%; top: -13px;
+      font-size: 20px; color: #ffeaa1;
+      text-shadow: 0 0 7px white, 0 0 15px #f99ab5;
+      pointer-events: none;
+      animation: corner-twinkle 2.8s ease-in-out infinite alternate;
+    }
+    @keyframes corner-twinkle {
+      from { transform: rotate(-20deg) scale(.75); opacity: .45; }
+      to { transform: rotate(18deg) scale(1.2); opacity: 1; }
+    }
+    .glass.is-visible {
+      opacity: 1; visibility: visible;
+      transform: translate3d(-50%,0,0) scale(1);
+      pointer-events: auto;
+    }
+    .glass.is-leaving { opacity: 0; transform: translate3d(-50%,-28px,0) scale(.91); pointer-events: none; }
+    .letter-card {
+      width: min(88vw, 500px);
+      height: min(35svh, 322px);
+      padding: clamp(12px, 2svh, 20px) clamp(17px, 3vw, 26px);
+      display: grid; grid-template-rows: auto minmax(0,1fr) auto;
+      gap: clamp(6px, 1.2svh, 12px);
+    }
+    .letter-header { text-align: center; }
+    .letter-header h2 { margin: 2px 0 0; font-size: clamp(17px, 2.4svh, 24px); line-height: 1.35; }
+    .letter-text {
+      min-height: 0; overflow-y: auto; overflow-x: hidden;
+      padding: 1px 7px 4px 1px; margin: 0;
+      white-space: pre-line; overflow-wrap: anywhere;
+      font-size: clamp(12px, 1.8svh, 16px);
+      line-height: 1.75; font-weight: 500;
+      scrollbar-width: thin; scrollbar-color: #eeb2c7 transparent;
+      text-align: left;
+    }
+    .letter-footer { display: flex; justify-content: center; align-items: center; gap: 10px; }
+    .letter-footer small { font-size: clamp(10px, 1.5svh, 12px); color: var(--muted); }
+    .heart-button {
+      width: clamp(37px, 5.8svh, 48px); height: clamp(37px, 5.8svh, 48px);
+      display: grid; place-items: center;
+      border: 2px solid #fff9; border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #fff2f7, #ffc4d8);
+      box-shadow: 0 0 18px #f7a2c1aa, 0 5px 12px #e7a2b880;
+      color: #ee588b; font: 700 clamp(21px,3.4svh,29px)/1 'Comfortaa', sans-serif;
+      cursor: pointer; animation: heart-glow 1.45s ease-in-out infinite;
+    }
+    @keyframes heart-glow {
+      0%,100% { transform: scale(1); box-shadow: 0 0 14px #f7a2c17a, 0 4px 10px #e7a2b870; }
+      50% { transform: scale(1.1); box-shadow: 0 0 27px #fa8eafcc, 0 6px 15px #e7a2b8aa; }
+    }
+    .heart-button:hover { background: #ffd7e5; }
+
+    .question-card, .ending-card {
+      width: min(90vw, 540px); max-height: min(38svh, 354px);
+      overflow-y: auto;
+      padding: clamp(15px, 2.1svh, 23px) clamp(16px, 3.4vw, 29px);
+      text-align: center;
+    }
+    .question-card .tiny-hearts { margin: 0 0 3px; font-size: clamp(18px,2.8svh,25px); }
+    .question-card h2 {
+      margin: clamp(7px, 1.3svh, 12px) 0 clamp(13px,2svh,19px);
+      font-size: clamp(15px, 2.25svh, 22px); line-height: 1.57;
+      font-weight: 700; color: #85485f;
+    }
+    .answer-row { display: flex; align-items: center; justify-content: center; gap: clamp(8px, 2vw, 16px); width: 100%; min-height: 48px; }
+    .answer-button {
+      flex-basis: 0; min-width: 0; min-height: clamp(42px, 6svh, 55px);
+      padding: 8px clamp(6px, 1.4vw, 13px);
+      border: none; border-radius: 50px;
+      font-size: clamp(12px, 1.75svh, 16px); font-weight: 700;
+      white-space: nowrap; cursor: pointer;
+      transition: transform .3s ease, flex-grow .3s ease, font-size .3s ease, box-shadow .3s ease;
+    }
+    .yes-button {
+      --grow: 1;
+      flex-grow: var(--grow);
+      background: linear-gradient(130deg, #ffa4be, #ea6594);
+      color: white; text-shadow: 0 1px 3px #bc5a7a66;
+      box-shadow: 0 7px 19px #ec79a196;
+    }
+    .yes-button:hover { box-shadow: 0 9px 28px #ec79a1c0; }
+    .no-button {
+      flex-grow: 1; background: #eee6ea; color: #a18e99;
+      transform: scale(var(--shrink,1));
+    }
+    .answer-row.only-yes .yes-button {
+      flex-grow: 1; flex-basis: 100%; max-width: 100%;
+      min-height: clamp(52px, 7svh, 66px);
+      font-size: clamp(16px, 2.4svh, 22px);
+      box-shadow: 0 9px 30px #e85e94b0;
+      animation: yes-bounce .7s ease both;
+    }
+    @keyframes yes-bounce {
+      0% { transform: scale(.87); }
+      60% { transform: scale(1.035); }
+      100% { transform: scale(1); }
+    }
+    .ending-card { display: grid; justify-items: center; align-content: start; gap: clamp(5px, 1svh, 10px); }
+    .ending-card h2 { margin: 0; font-size: clamp(18px, 2.65svh, 25px); line-height: 1.35; }
+    .ending-card img {
+      width: clamp(70px, 15svh, 145px); height: clamp(70px, 15svh, 145px);
+      object-fit: contain; border-radius: 19px;
+      box-shadow: 0 5px 18px #e58daa47;
+    }
+    .ending-card p {
+      margin: 0; line-height: 1.55; font-size: clamp(13px, 1.95svh, 18px);
+      color: #9d4a70; font-weight: 700;
+    }
+    .ending-card .last-line { font-size: clamp(10px, 1.6svh, 13px); font-weight: 500; color: var(--muted); }
+
+    .music-pill {
+      position: fixed; z-index: 8; top: 5.5svh; right: max(3vw, 12px);
+      max-width: min(48vw, 240px);
+      padding: 8px 12px; border-radius: 999px;
+      border: 1.5px solid #fff9; background: #fff3f8df;
+      box-shadow: 0 6px 22px #e08fa03d;
+      backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+      font-size: clamp(10px, 1.55svh, 13px); font-weight: 700; color: var(--berry-dark);
+      cursor: pointer;
+    }
+    .music-pill:hover { background: #fff; }
+    #confettiFallback { position: fixed; inset: 0; z-index: 30; pointer-events: none; width: 100vw; height: 100vh; }
+    @media (min-aspect-ratio: 4/3) {
+      body { background-size: auto 100%; background-position: center bottom; }
+    }
+    @media (max-aspect-ratio: 4/3) {
+      body { background-size: cover; background-position: center; }
+    }
+    @media (max-width: 420px) {
+      .intro-title { top: 8.2svh; }
+      .envelope-spot { top: 17.5svh; }
+      .tap-hint { top: 40svh; }
+      .music-pill { top: 5svh; right: 10px; padding: 7px 9px; }
+      .question-card h2 { line-height: 1.47; }
+      .letter-card { width: 91vw; }
+    }
+    @media (max-height: 540px) {
+      .intro-title { top: 4svh; }
+      .envelope-spot { top: 12svh; height: 25svh; width: min(160px,32vw); }
+      .tap-hint { top: 43svh; }
+      .music-pill { top: 2svh; }
+      :root { --panel-top: 8svh; }
+      .letter-card { height: 41svh; }
+      .question-card, .ending-card { max-height: 44svh; }
+    }
+    @media (max-width: 550px) {
+      /* Maintain detail without overwhelming small screens. */
+      .particle:nth-of-type(n+63) { display: none; }
+      .bokeh { opacity: .22; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .particle, .bokeh, .burst-heart { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="sky" aria-hidden="true"></div>
+  <div id="burstLayer" aria-hidden="true"></div>
+
+  <section id="introScene" class="intro scene" aria-label="Mở lá thư tình">
+    <h1 class="intro-title">Một lá thư bé xíu dành cho em</h1>
+    <div class="envelope-spot">
+      <button id="envelopeButton" class="envelope-button" type="button" aria-label="Nhấn để mở phong thư tình">
+        <span class="envelope-art" aria-hidden="true">
+          <span class="env-back"></span>
+          <span class="env-paper">Gửi đến em <span>♡</span></span>
+          <span class="env-front"></span>
+          <span class="env-flap"></span>
+          <span class="env-seal">♥</span>
+        </span>
+      </button>
+    </div>
+    <p class="tap-hint">Chạm vào chiếc phong thư này nha 💌</p>
+  </section>
+
+  <section id="letterScene" class="glass letter-card scene" role="dialog" aria-modal="false" aria-labelledby="letterTitle" aria-hidden="true" inert>
+    <header class="letter-header">
+      <span class="eyebrow">♡ một lời từ trái tim ♡</span>
+      <h2 id="letterTitle">Gửi người anh thương 💗</h2>
+    </header>
+    <p id="letterText" class="letter-text" tabindex="0">Anh có một điều muốn kể em nghe...</p>
+    <div class="letter-footer">
+      <small>Đọc xong thì nhấn tim nhé</small>
+      <button id="heartButton" type="button" class="heart-button" aria-label="Đọc lời tỏ tình tiếp theo">♥</button>
+    </div>
+  </section>
+
+  <section id="questionScene" class="glass question-card scene" role="dialog" aria-modal="false" aria-labelledby="questionTitle" aria-hidden="true" inert>
+    <div class="tiny-hearts" aria-hidden="true">💗 ✨ 💗</div>
+    <span class="eyebrow">Anh hỏi em một điều nhé...</span>
+    <h2 id="questionTitle">Em cho phép anh là người bạn đồng hành, người để em chia sẻ, người cùng em vượt khó nhé !!!</h2>
+    <div id="answerRow" class="answer-row">
+      <button id="yesButton" type="button" class="answer-button yes-button">Dạ em đồng ý 💗</button>
+      <button id="noButton" type="button" class="answer-button no-button">Mơ đi anh</button>
+    </div>
+  </section>
+
+  <section id="endingScene" class="glass ending-card scene" role="dialog" aria-modal="false" aria-labelledby="endingTitle" aria-hidden="true" inert>
+    <span class="eyebrow">♡ chúng mình chính thức rồi ♡</span>
+    <h2 id="endingTitle">Yayyy! Quáaaaaaaaa đãaaaaaaaaaaaa! 🎉</h2>
+    <img src="chiikawa.gif" alt="Chiikawa đáng yêu đang đu dây" />
+    <p>Yêu em nhất trên đời! Cảm ơn em đã đồng ý làm người thương của anh ❤️</p>
+    <span class="last-line">Từ hôm nay, mỗi ngày đều là một ngày đặc biệt ♡</span>
+  </section>
+
+  <button id="musicButton" class="music-pill" type="button" hidden aria-label="Bật hoặc tắt nhạc">♫ Bật nhạc</button>
+  <canvas id="confettiFallback" aria-hidden="true" hidden></canvas>
+
+  <!-- Local files: chiikawa.webp, chiikawa.gif and text.txt. External services: fonts, YouTube API, and canvas-confetti. -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" async></script>
+  <script>
+    'use strict';
+
+    // The love letter is loaded from text.txt beside this HTML via fetch().
+    // If opened as file:// (blocked by browser) or if missing, sample fallback is used.
+    // Run `python -m http.server 5500 --bind 127.0.0.1` for edits to text.txt.
+    const SAMPLE_LETTER = `Em à,
+
+    Anh chẳng biết từ bao giờ, những ngày rất đỗi bình thường lại trở nên đáng yêu hơn chỉ vì có em xuất hiện.
+
+    Anh thích được nghe em kể những chuyện bé xíu trong ngày, thích nhìn em cười, và cũng muốn ở bên khi em có những ngày chẳng vui chút nào.
+
+    Anh không dám hứa mọi con đường đều trải hoa hồng. Nhưng anh hứa sẽ chân thành, sẽ lắng nghe, sẽ cùng em đi qua những điều khó khăn và trân trọng từng khoảnh khắc bên nhau.
+
+    Nếu em đồng ý, anh muốn từ hôm nay được nắm tay em, cùng em viết tiếp một câu chuyện thật dịu dàng.
+
+    Thương em thật nhiều. ♡`;
+
+    const $ = id => document.getElementById(id);
+    const intro = $('introScene');
+    const envelopeButton = $('envelopeButton');
+    const letterScene = $('letterScene');
+    const questionScene = $('questionScene');
+    const endingScene = $('endingScene');
+    const musicButton = $('musicButton');
+    let hasOpened = false;
+    let refusalCount = 0;
+
+    // Each scene is inert outside its active moment, including for keyboard users.
+    function showScene(scene) {
+      scene.classList.remove('is-leaving');
+      scene.classList.add('is-visible');
+      scene.removeAttribute('inert');
+      scene.setAttribute('aria-hidden', 'false');
+    }
+    function hideScene(scene) {
+      scene.classList.add('is-leaving');
+      scene.classList.remove('is-visible');
+      scene.setAttribute('inert', '');
+      scene.setAttribute('aria-hidden', 'true');
+    }
+
+    // Full-screen ambience: falling hearts + sparkles across the whole viewport,
+    // plus gentle floating hearts so the cute effect is visible everywhere.
+    (function addParticles() {
+      const sky = $('sky');
+      const colors = ['#f47da8', '#ff9fbc', '#e89cce', '#fff0a5', '#f8b6f2', '#fdfcf0'];
+      const pastelGlows = ['#f78bad', '#f4a5c2', '#d9a1ea', '#f9db77', '#eeb6f5', '#fff5c7'];
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion) return;
+
+      const width = window.innerWidth || 1200;
+      const height = window.innerHeight || 800;
+      const makeParticle = (type, mode, i, xPct, yPct = null) => {
+        const p = document.createElement('span');
+        p.className = `particle ${type} ${mode}`;
+        const inner = document.createElement('span');
+        inner.className = 'particle-inner';
+        inner.textContent = type === 'sparkle'
+          ? (i % 2 ? '✦' : '✧')
+          : (i % 5 ? '♥' : '♡');
+        p.appendChild(inner);
+        p.style.setProperty('--x', `${xPct}%`);
+        if (yPct !== null) p.style.setProperty('--y', `${yPct}%`);
+        p.style.setProperty('--size', `${type === 'sparkle' ? 9 + (i * 3 % 9) : 12 + (i * 5 % 12)}px`);
+        p.style.setProperty('--color', colors[i % colors.length]);
+        p.style.setProperty('--glow', pastelGlows[i % pastelGlows.length]);
+        p.style.setProperty('--alpha', type === 'sparkle' ? '.92' : '.84');
+        p.style.setProperty('--duration', `${mode === 'drift' ? 6 + i % 6 : 12 + i % 13}s`);
+        p.style.setProperty('--delay', `${-((i * 3.67) % 24)}s`);
+        p.style.setProperty('--sway', `${(i % 2 ? -1 : 1) * (20 + i % 10 * 8)}px`);
+        p.style.setProperty('--twinkle', `${1.55 + (i % 7) * .35}s`);
+        p.style.setProperty('--twinkle-delay', `${-(i % 6) * .25}s`);
+        p.style.setProperty('--startY', `${-15 - (i % 6) * 4}svh`);
+        sky.appendChild(p);
+      };
+
+      // Falling hearts/sparkles distributed from edge to edge.
+      const totalFalling = width < 560 ? 62 : 78;
+      for (let i = 0; i < totalFalling; i++) {
+        const type = (i % 3 === 0 || i % 5 === 0) ? 'heart' : 'sparkle';
+        const xPct = ((i * 17.3) + (i % 7) * 5.9) % 100;
+        makeParticle(type, 'falling', i, xPct);
+      }
+
+      // Floating hearts across the whole screen to avoid clustering in one area.
+      const driftCount = width < 560 ? 12 : 18;
+      for (let i = 0; i < driftCount; i++) {
+        const xPct = 4 + ((i * 19.7) % 92);
+        const yPct = 8 + ((i * 11.5) % 78);
+        makeParticle('heart', 'drift', 100 + i, xPct, yPct);
+      }
+
+      // Soft bokeh around the full screen, lighter near the bottom so Chiikawa stays visible.
+      const bokehCount = width < 560 ? 10 : 14;
+      for (let i = 0; i < bokehCount; i++) {
+        const b = document.createElement('span');
+        b.className = 'bokeh';
+        const x = 3 + ((i * 13) % 94);
+        const y = 4 + ((i * 9) % 88);
+        b.style.setProperty('--x', `${x}%`);
+        b.style.setProperty('--y', `${y}%`);
+        b.style.setProperty('--size', `${20 + (i * 11) % 28}px`);
+        b.style.setProperty('--blur', `${2 + i % 4}px`);
+        b.style.setProperty('--color', colors[i % 5]);
+        b.style.setProperty('--duration', `${7 + i % 6}s`);
+        b.style.setProperty('--delay', `${-i * .8}s`);
+        b.style.opacity = y > 58 ? '.18' : '.34';
+        sky.appendChild(b);
+      }
+    })();
+
+    function burstMiniHearts() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const rect = envelopeButton.getBoundingClientRect();
+      const layer = $('burstLayer');
+      for (let i = 0; i < 12; i++) {
+        const bit = document.createElement('span');
+        bit.className = 'burst-heart';
+        bit.textContent = i % 3 ? '♥' : '✦';
+        const angle = -Math.PI + i * Math.PI * 2 / 12;
+        const reach = 85 + i % 4 * 15;
+        bit.style.setProperty('--x', `${rect.left + rect.width / 2}px`);
+        bit.style.setProperty('--y', `${rect.top + rect.height / 2}px`);
+        bit.style.setProperty('--dx', `${Math.cos(angle) * reach}px`);
+        bit.style.setProperty('--dy', `${Math.sin(angle) * reach * .7}px`);
+        bit.style.setProperty('--turn', `${i % 2 ? -45 : 45}deg`);
+        bit.style.setProperty('--size', `${14 + i % 7}px`);
+        bit.style.setProperty('--color', ['#ed6996','#ff9dbe','#f6b3e9','#ffd991'][i % 4]);
+        layer.appendChild(bit);
+        bit.addEventListener('animationend', () => bit.remove(), {once:true});
+      }
+    }
+
+    async function readLetter() {
+      try {
+        const response = await fetch('text.txt', {cache: 'no-store'});
+        if (!response.ok) throw new Error('Could not read text.txt');
+        const content = (await response.text()).trim();
+        if (!content) throw new Error('text.txt is empty');
+        $('letterText').textContent = content;
+      } catch (_) {
+        $('letterText').textContent = SAMPLE_LETTER.replace(/^ {4}/gm, '');
+      }
+    }
+
+    // YouTube IFrame API - load the player early, play when the LETTER is clicked.
+    // IMPORTANT: file:// documents normally have no HTTP Referer. YouTube may
+    // reject them (error 153). Open over http://localhost or HTTPS instead.
+    const MUSIC_ID = 'Rb3hfEPyJxQ';
+    const MUSIC_START = 130;
+    const MUSIC_END = 201;
+    const isLocalFile = window.location.protocol === 'file:';
+    let ytPlayer = null;
+    let ytReady = false;
+    let musicRequested = false;
+    let musicPlaying = false;
+    let musicError = false;
+    let musicBlocked = false;
+    let musicLoopTimer = null;
+    let musicAttemptTimer = null;
+
+    function updateMusicButton() {
+      musicButton.hidden = !hasOpened;
+      if (musicPlaying) {
+        musicButton.textContent = '♫ Nhạc đang phát · Tạm dừng';
+        musicButton.title = 'Bấm để tạm dừng nhạc';
+      } else if (musicError || (isLocalFile && hasOpened)) {
+        musicButton.textContent = isLocalFile ? '♫ Cần mở bằng Live Server' : '♫ Mở nhạc trên YouTube';
+        musicButton.title = isLocalFile
+          ? 'Mở index.html bằng VS Code Live Server (http://localhost), không nhấp đúp file.'
+          : 'YouTube có thể chặn nhúng. Bấm để mở bài hát ở giây 130 trên YouTube.';
+      } else if (musicBlocked) {
+        musicButton.textContent = '♫ Chạm lần nữa để bật nhạc';
+        musicButton.title = 'Trình duyệt chặn phát nhạc lần đầu, bấm để thử lại';
+      } else if (musicRequested) {
+        musicButton.textContent = ytReady ? '♫ Đang phát nhạc…' : '♫ Đang tải YouTube…';
+        musicButton.title = 'Nếu không phát được, bấm nút này để thử lại';
+      } else {
+        musicButton.textContent = ytReady ? '♫ Bật nhạc' : '♫ Đang tải YouTube…';
+      }
+    }
+
+    function playMusicFromGesture() {
+      musicRequested = true;
+      musicBlocked = false;
+      updateMusicButton();
+      if (!ytReady || !ytPlayer || musicError) return;
+      try {
+        // These commands run directly in the envelope click handler whenever
+        // the player was loaded before the click.
+        ytPlayer.unMute();
+        ytPlayer.setVolume(100);
+        const now = ytPlayer.getCurrentTime();
+        if (!Number.isFinite(now) || now < MUSIC_START || now >= MUSIC_END) {
+          ytPlayer.seekTo(MUSIC_START, true);
+        }
+        ytPlayer.playVideo();
+      } catch (error) {
+        console.warn('YouTube chưa phát được:', error);
+        musicBlocked = true;
+        updateMusicButton();
+      }
+    }
+
+    window.onYouTubeIframeAPIReady = function () {
+      try {
+        const options = {
+          autoplay: 0, controls: 1, start: MUSIC_START,
+          playsinline: 1, rel: 0, enablejsapi: 1
+        };
+        if (window.location.protocol === 'https:' || window.location.protocol === 'http:') {
+          options.origin = window.location.origin;
+        }
+        ytPlayer = new YT.Player('youtube-player', {
+          width: '220', height: '220', videoId: MUSIC_ID,
+          playerVars: options,
+          events: {
+            onReady(event) {
+              ytReady = true;
+              // Permission and referrer policy apply to the embedded player.
+              const iframe = event.target.getIframe();
+              iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+              iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+              if (musicRequested) playMusicFromGesture();
+              updateMusicButton();
+            },
+            onStateChange(event) {
+              if (event.data === YT.PlayerState.PLAYING) {
+                musicPlaying = true;
+                musicBlocked = false;
+                if (musicAttemptTimer) clearTimeout(musicAttemptTimer);
+                if (!musicLoopTimer) {
+                  musicLoopTimer = setInterval(() => {
+                    if (!ytReady || !ytPlayer || !musicPlaying) return;
+                    try {
+                      if (ytPlayer.getCurrentTime() >= MUSIC_END - .25) {
+                        ytPlayer.seekTo(MUSIC_START, true);
+                      }
+                    } catch (_) { /* YouTube temporarily buffering */ }
+                  }, 250);
+                }
+              } else if (event.data === YT.PlayerState.ENDED) {
+                // End-of-video safety fallback (normal loop occurs at 201 sec).
+                try { ytPlayer.seekTo(MUSIC_START, true); ytPlayer.playVideo(); } catch (_) {}
+              } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.CUED) {
+                musicPlaying = false;
+              }
+              updateMusicButton();
+            },
+            onAutoplayBlocked() {
+              musicPlaying = false;
+              musicBlocked = true;
+              updateMusicButton();
+            },
+            onError(event) {
+              console.warn('YouTube embed error:', event.data);
+              musicError = true;
+              musicPlaying = false;
+              updateMusicButton();
+            }
+          }
+        });
+      } catch (err) {
+        console.warn('YouTube API load failed:', err);
+        musicError = true;
+        updateMusicButton();
+      }
+    };
+
+    // Preload on page load, so a user's first click will normally play at once.
+    (function initYouTube() {
+      const container = document.createElement('div');
+      container.setAttribute('aria-hidden', 'true');
+      container.style.cssText = 'position:fixed;left:-9999px;top:0;width:220px;height:220px;opacity:0;pointer-events:none;overflow:hidden;z-index:-1;';
+      const mount = document.createElement('div');
+      mount.id = 'youtube-player';
+      container.appendChild(mount);
+      document.body.appendChild(container);
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      script.onerror = () => { musicError = true; updateMusicButton(); };
+      document.head.appendChild(script);
+    })();
+
+    function openMusicOnYouTube() {
+      window.open('https://www.youtube.com/watch?v=' + MUSIC_ID + '&t=' + MUSIC_START + 's', '_blank', 'noopener,noreferrer');
+    }
+
+    musicButton.addEventListener('click', () => {
+      if (musicError || isLocalFile) { openMusicOnYouTube(); return; }
+      if (ytReady && musicPlaying) {
+        try { ytPlayer.pauseVideo(); } catch (_) {}
+        musicPlaying = false;
+        musicRequested = false;
+      } else {
+        playMusicFromGesture();
+      }
+      updateMusicButton();
+    });
+
+    envelopeButton.addEventListener('click', () => {
+      if (hasOpened) return;
+      hasOpened = true;
+      envelopeButton.classList.add('is-opening');
+      envelopeButton.disabled = true;
+      burstMiniHearts();
+      readLetter();
+      // Play in the gesture handler, not after the envelope animation.
+      playMusicFromGesture();
+      if (!isLocalFile) {
+        // If a slow network or browser policy prevents playback, show a retry.
+        if (musicAttemptTimer) clearTimeout(musicAttemptTimer);
+        musicAttemptTimer = setTimeout(() => {
+          if (musicRequested && !musicPlaying && !musicError) {
+            musicBlocked = true;
+            updateMusicButton();
+          }
+        }, 5500);
+      }
+      updateMusicButton();
+      window.setTimeout(() => {
+        intro.classList.add('is-gone');
+        intro.setAttribute('aria-hidden', 'true');
+        intro.setAttribute('inert', '');
+        showScene(letterScene);
+        $('heartButton').focus({preventScroll: true});
+      }, 850);
+    });
+
+    $('heartButton').addEventListener('click', () => {
+      hideScene(letterScene);
+      window.setTimeout(() => {
+        showScene(questionScene);
+        $('yesButton').focus({preventScroll: true});
+      }, 355);
+    });
+
+    $('noButton').addEventListener('click', () => {
+      refusalCount += 1;
+      const scales = [.8, .6, .4, .2, 0];
+      const answerRow = $('answerRow');
+      const no = $('noButton');
+      const yes = $('yesButton');
+      if (refusalCount >= 5) {
+        no.hidden = true; // display:none at precisely the fifth click.
+        answerRow.classList.add('only-yes');
+        yes.style.setProperty('--grow', '1');
+        yes.focus({preventScroll:true});
+      } else {
+        no.style.setProperty('--shrink', scales[refusalCount - 1]);
+        yes.style.setProperty('--grow', (1 + refusalCount * .32).toFixed(2));
+        yes.style.fontSize = `clamp(12px, ${1.75 + refusalCount * .08}svh, 19px)`;
+      }
+    });
+
+    function fireworks() {
+      if (typeof window.confetti === 'function') {
+        const colors = ['#f9a5bd','#ffdde9','#ed6e9d','#fff2bd','#ffffff','#cfa5e9'];
+        const bursts = [
+          {particleCount: 115, spread: 115, startVelocity: 43, origin: {x: .5, y: .48}},
+          {particleCount: 90, spread: 85, startVelocity: 42, origin: {x: .12, y: .58}},
+          {particleCount: 90, spread: 85, startVelocity: 42, origin: {x: .88, y: .58}},
+          {particleCount: 110, spread: 125, startVelocity: 36, origin: {x: .5, y: .3}}
+        ];
+        bursts.forEach((b,i) => setTimeout(() => window.confetti({ ...b, colors, scalar: .9, ticks: 215, zIndex: 40 }), i * 270));
+      } else {
+        // Works offline too, if the external canvas-confetti CDN is blocked.
+        simpleConfetti();
+      }
+    }
+    function simpleConfetti() {
+      const c = $('confettiFallback');
+      c.hidden = false;
+      const ctx = c.getContext('2d');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      c.width = window.innerWidth * dpr;
+      c.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      const w = window.innerWidth, h = window.innerHeight;
+      const colors = ['#f9a5bd','#ffdde9','#ed6e9d','#fff2bd','#ffffff','#cfa5e9'];
+      const pieces = Array.from({length: 210}, (_,i) => ({
+        x: w * (.28 + Math.random() * .44), y: h * .42,
+        vx: (Math.random() - .5) * 13, vy: -(Math.random() * 10 + 3),
+        a: Math.random() * 6.28, s: 3 + Math.random() * 6,
+        color: colors[i % colors.length], r: Math.random() * 3
+      }));
+      let frames = 0;
+      function tick() {
+        ctx.clearRect(0,0,w,h);
+        pieces.forEach(p => {
+          p.x += p.vx; p.y += p.vy; p.vy += .18; p.vx *= .996; p.a += .09;
+          ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
+          ctx.fillStyle = p.color; ctx.fillRect(-p.s/2,-p.s/3,p.s,p.s*.65); ctx.restore();
+        });
+        if (++frames < 250) requestAnimationFrame(tick);
+        else { c.hidden = true; ctx.clearRect(0,0,w,h); }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    $('yesButton').addEventListener('click', () => {
+      hideScene(questionScene);
+      setTimeout(() => {
+        showScene(endingScene);
+        $('endingScene').focus({preventScroll:true});
+      }, 270);
+      fireworks();
+    });
+  </script>
+</body>
+</html>
