@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#5B7B8C" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
-  <meta name="description" content="Một chiếc thư nhỏ xinh dành riêng cho người thương 💗" />
-  <title>Một lá thư bé xíu gửi đến em 💌</title>
+  <meta name="description" content="Một chiếc thư nhỏ xinh kỷ niệm 2 năm gửi đến heo con 💗" />
+  <title>Kỷ niệm 2 năm tụi mình bên nhau 💌</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -395,13 +395,13 @@
   <div id="sky" aria-hidden="true"></div>
   <div id="burstLayer" aria-hidden="true"></div>
 
-  <section id="introScene" class="intro scene" aria-label="Mở lá thư tình">
-    <h1 class="intro-title">Một lá thư bé xíu dành cho em</h1>
+  <section id="introScene" class="intro scene" aria-label="Mở phong thư">
+    <h1 class="intro-title">Chiếc thư bé xíu gửi heo con</h1>
     <div class="envelope-spot">
-      <button id="envelopeButton" class="envelope-button" type="button" aria-label="Nhấn để mở phong thư tình">
+      <button id="envelopeButton" class="envelope-button" type="button" aria-label="Nhấn để mở phong thư">
         <span class="envelope-art" aria-hidden="true">
           <span class="env-back"></span>
-          <span class="env-paper">Gửi đến em <span>♡</span></span>
+          <span class="env-paper">Gửi heo con <span>♡</span></span>
           <span class="env-front"></span>
           <span class="env-flap"></span>
           <span class="env-seal">♥</span>
@@ -413,32 +413,32 @@
 
   <section id="letterScene" class="glass letter-card scene" role="dialog" aria-modal="false" aria-labelledby="letterTitle" aria-hidden="true" inert>
     <header class="letter-header">
-      <span class="eyebrow">♡ một lời từ trái tim ♡</span>
-      <h2 id="letterTitle">Gửi người anh thương 💗</h2>
+      <span class="eyebrow">♡ 2 năm tụi mình bên nhau ♡</span>
+      <h2 id="letterTitle">Gửi heo con iu dấu 💗</h2>
     </header>
-    <p id="letterText" class="letter-text" tabindex="0">Anh có một điều muốn kể em nghe...</p>
+    <p id="letterText" class="letter-text" tabindex="0">Đang mở thư...</p>
     <div class="letter-footer">
       <small>Đọc xong thì nhấn tim nhé</small>
-      <button id="heartButton" type="button" class="heart-button" aria-label="Đọc lời tỏ tình tiếp theo">♥</button>
+      <button id="heartButton" type="button" class="heart-button" aria-label="Xem câu hỏi tiếp theo">♥</button>
     </div>
   </section>
 
   <section id="questionScene" class="glass question-card scene" role="dialog" aria-modal="false" aria-labelledby="questionTitle" aria-hidden="true" inert>
     <div class="tiny-hearts" aria-hidden="true">💗 ✨ 💗</div>
-    <span class="eyebrow">Anh hỏi em một điều nhé...</span>
-    <h2 id="questionTitle">Em cho phép anh là người bạn đồng hành, người để em chia sẻ, người cùng em vượt khó nhé !!!</h2>
+    <span class="eyebrow">Tui hỏi heo con một câu nè...</span>
+    <h2 id="questionTitle">Heo con có đồng ý tiếp tục đồng hành và cùng tui đi thật xa xa xaa hơn nữa hong? 🥺</h2>
     <div id="answerRow" class="answer-row">
-      <button id="yesButton" type="button" class="answer-button yes-button">Dạ em đồng ý 💗</button>
-      <button id="noButton" type="button" class="answer-button no-button">Mơ đi anh</button>
+      <button id="yesButton" type="button" class="answer-button yes-button">Dạ đồng ý lunn 💗</button>
+      <button id="noButton" type="button" class="answer-button no-button">Hổng thèm</button>
     </div>
   </section>
 
   <section id="endingScene" class="glass ending-card scene" role="dialog" aria-modal="false" aria-labelledby="endingTitle" aria-hidden="true" inert>
-    <span class="eyebrow">♡ chúng mình chính thức rồi ♡</span>
+    <span class="eyebrow">♡ Happy 2-Year Anniversary ♡</span>
     <h2 id="endingTitle">Yayyy! Quáaaaaaaaa đãaaaaaaaaaaaa! 🎉</h2>
     <img src="chiikawa.gif" alt="Chiikawa đáng yêu đang đu dây" />
-    <p>Yêu em nhất trên đời! Cảm ơn em đã đồng ý làm người thương của anh ❤️</p>
-    <span class="last-line">Từ hôm nay, mỗi ngày đều là một ngày đặc biệt ♡</span>
+    <p>Iu heo con nhiều lắmmm! Cảm ơn bồ vì đã luôn đồng hành suốt 2 năm qua ❤️</p>
+    <span class="last-line">Hứa sẽ bớt ngáo ngơ và cùng heo con đi thật xa nữa nha ♡</span>
   </section>
 
   <button id="musicButton" class="music-pill" type="button" hidden aria-label="Bật hoặc tắt nhạc">♫ Bật nhạc</button>
@@ -448,17 +448,8 @@
   <script>
     'use strict';
 
-    const SAMPLE_LETTER = `Em à,
-
-    Anh chẳng biết từ bao giờ, những ngày rất đỗi bình thường lại trở nên đáng yêu hơn chỉ vì có em xuất hiện.
-
-    Anh thích được nghe em kể những chuyện bé xíu trong ngày, thích nhìn em cười, và cũng muốn ở bên khi em có những ngày chẳng vui chút nào.
-
-    Anh không dám hứa mọi con đường đều trải hoa hồng. Nhưng anh hứa sẽ chân thành, sẽ lắng nghe, sẽ cùng em đi qua những điều khó khăn và trân trọng từng khoảnh khắc bên nhau.
-
-    Nếu em đồng ý, anh muốn từ hôm nay được nắm tay em, cùng em viết tiếp một câu chuyện thật dịu dàng.
-
-    Thương em thật nhiều. ♡`;
+    const SAMPLE_LETTER = `Héluu heo con
+Vậy là tui mình đã đạt được cột mốc 2 năm vén nhau rùiii. Qua 2 năm tụi mình đã trưởng thành hơn 1 tẹo, cùng nhau dũng cảm vượt qua những thử thách, cùng cùng nhau gặt hái những thành công. Cũng có vài lần tui hơi "ngáo ngơ" làm heo con giận, sau những lần đó bản thân tui hứa sẽ cố gắng update để không phạm phải lỗi cũ nữa. Cảm ơn heo con đã xuất hiện để tui có 1 người yêu thương, chăm sóc và 1 người bạn đồng hành với tui qua mọi sự kiện lớn nhỏ. Sau này tui mong tụi mình sẽ cùng nhau đồng hành đi xa xa xaa hơn nữa nha bồ. Iu heo con nhìu lắmmm`;
 
     const $ = id => document.getElementById(id);
     const intro = $('introScene');
@@ -578,7 +569,7 @@
         if (!content) throw new Error('text.txt is empty');
         $('letterText').textContent = content;
       } catch (_) {
-        $('letterText').textContent = SAMPLE_LETTER.replace(/^ {4}/gm, '');
+        $('letterText').textContent = SAMPLE_LETTER;
       }
     }
 
